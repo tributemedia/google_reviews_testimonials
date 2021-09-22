@@ -5,6 +5,7 @@ This Drupal 9 module provides the ability for the system to download reviews fro
 ### Features
 - Automatically downloads reviews from GMB API and converts them to testimonials.
 - Minimum review star threshold can be configured to have the module filter out reviews based on their amount of stars.
+- Review status page to view queue sizes and other module information.
 
 ## Installation & Configuration
 Installation steps TBD.
