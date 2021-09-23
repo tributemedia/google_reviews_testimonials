@@ -1,0 +1,28 @@
+google_reviews_testimonials.settings:
+  type: config_object
+  label: 'Config for Google Reviews Testimonials module.'
+  mapping:
+    accountID:
+      type: string
+      label: 'Account ID'
+    scopes:
+      type: sequence
+      label: 'Scopes'
+      sequence:
+        type: string
+    serviceKey:
+      type: blob
+      label: 'Service Key'
+    subject:
+      type: string
+      label: 'Subject'
+    locationID:
+      type: string
+      label: 'Location ID'
+    locationName:
+      type: string
+      label: 'Location Name'
+    starMin:
+      type: integer
+      label: 'Star Minimum'
+      
