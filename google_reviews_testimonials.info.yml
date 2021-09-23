@@ -1,6 +1,6 @@
 name: 'Google Reviews Testimonials'
 type: module
 description: 'Creates TM Testimonials out of Google My Business reviews.'
-package: Web Services
+package: Web services
 version: '9.x-1.0-dev'
 core_version_requirement: '9.x'
