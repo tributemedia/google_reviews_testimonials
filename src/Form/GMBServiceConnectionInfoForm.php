@@ -75,6 +75,7 @@ class GMBServiceConnectionInfoForm extends FormBase {
       ->getEditable('google_reviews_testimonials.settings');
     $serviceKey = $config->get('serviceKey');
     $subject = $config->get('subject');
+    $scopes = $config->get('scopes');
 
     // If the requested service key to be saved is different than the stored,
     // attempt to save it. Otherwise, do nothing for this step.
@@ -95,9 +96,7 @@ class GMBServiceConnectionInfoForm extends FormBase {
     $tmpSK = (array)json_decode($serviceKey);
     $googleClient = new \Google\Client();
     $googleClient->setAuthConfig($tmpSK);
-    // Scope set manually for now, will be provided in default settings
-    $googleClient
-      ->setScopes('https://www.googleapis.com/auth/business.manage');
+    $googleClient->setScopes($scopes);
     $googleClient->setSubject($subject);
     $httpClient = $googleClient->authorize();
     $response = json_decode(strval($httpClient
