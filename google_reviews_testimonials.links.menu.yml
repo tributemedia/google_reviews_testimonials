@@ -1,0 +1,12 @@
+google_reviews_testimonials.admin.structure.gmb_service_connection_settings:
+  title: 'GMB Service Connection Settings'
+  description: 'Configure Google Api Service Connection'
+  route_name:  google_reviews_testimonials.gmb_service_connection_settings
+  parent: system.admin_config_services
+  weight: 200
+google_reviews_testimonials.admin.structure.gmb_location_settings:
+  title: 'GMB Location Settings'
+  description: 'Configure Google Api Location Information'
+  route_name:  google_reviews_testimonials.gmb_location_settings
+  parent: system.admin_config_services
+  weight: 201
