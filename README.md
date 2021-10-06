@@ -53,8 +53,11 @@ The first step in the workflow. This is a worker that runs every 12 hours, and i
 #### New Review Check
 
 **Queue ID:** `google_reviews_testimonials_rcq` (rcq = Review Check Queue)
+
 **Run Time:** 30 minutes
+
 **Parameters:**
+
 `pageToken` *(string)* - Pagination value that must be provided to the API to retrieve the next set of reviews, if applicable. **OPTIONAL.**
 
 Next, a list of **20** GMB reviews for the configured location is queried from the API. If there is no `TestimonialGMBReviewEntity` with a reference to the ID of the review, then a new job is created for the worker of the next step, to create new testimonials. 
@@ -64,11 +67,17 @@ This step is repeated for each review ID retrieved from the API. **If there are 
 #### Testimonial Creation & Review Link
 
 **Queue ID:** `google_reviews_testimonials_rlq` (rlq = Review Link Queue)
+
 **Run Time:** 30 minutes
+
 **Parameters:**
+
 `reviewID` *(string)* - ID of the review. **REQUIRED.**
+
 `displayName` *(string)* - Google display name of the reviewer. **REQUIRED.**
+
 `starRating` *(int)* - Star rating. **REQUIRED.**
+
 `comment` *(string)* - The review (comment, as its called in GMB). **REQUIRED.**
 
 The last step in this workflow. It starts by creating a new testimonial with the details specified above (note that there is no location of the reviewer, that is not provided by the API). The comment is trimmed to less than 150 characters for the summary of the testimonial, if necessary. Otherwise, the comment is used for both the summary and review fields of the testimonial.
