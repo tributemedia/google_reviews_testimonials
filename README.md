@@ -41,6 +41,7 @@ If you want to manually start a download, you can go to Configuration -> Web ser
 This is a high-level, but technically detailed breakdown of the entire Cron workflow pipeline, from review download to testimonial creation. If you're seeking information on how, in particular, the Cron workflow of the module is working, then read on.
 
 #### Trigger Review Check
+
 **Queue ID:** `google_reviews_testimonials_trcq` (trcq = Trigger Review Check Queue)
 **Run Time:** 12 hours
 **Parameters:** *None*
@@ -48,6 +49,7 @@ This is a high-level, but technically detailed breakdown of the entire Cron work
 The first step in the workflow. This is a worker that runs every 12 hours, and its one job is simple: Queue a job to the worker for the next step, checking for new reviews. No value is provided for `pageToken` when a job is queued by this worker, which will result in the review checker getting the first page of reviews on its first run. Naturally, this is what we always want on our first run.
 
 #### New Review Check
+
 **Queue ID:** `google_reviews_testimonials_rcq` (rcq = Review Check Queue)
 **Run Time:** 30 minutes
 **Parameters:**
@@ -58,6 +60,7 @@ Next, a list of **20** GMB reviews for the configured location is queried from t
 This step is repeated for each review ID retrieved from the API. **If there are more reviews than the 20 retrieved in the first query,** a new job is created for the worker of this queue, using the `pageToken` provided by the API as the parameter. **Since this is a separate job, it will not be processed until the next run of Cron.** This step, naturally, repeats until every review has been checked from the API, no matter how many paginations are required.
 
 #### Testimonial Creation & Review Link
+
 **Queue ID:** `google_reviews_testimonials_rlq` (rlq = Review Link Queue)
 **Run Time:** 30 minutes
 **Parameters:**
