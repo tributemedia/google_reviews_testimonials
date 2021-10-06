@@ -43,7 +43,9 @@ This is a high-level, but technically detailed breakdown of the entire Cron work
 #### Trigger Review Check
 
 **Queue ID:** `google_reviews_testimonials_trcq` (trcq = Trigger Review Check Queue)
+
 **Run Time:** 12 hours
+
 **Parameters:** *None*
 
 The first step in the workflow. This is a worker that runs every 12 hours, and its one job is simple: Queue a job to the worker for the next step, checking for new reviews. No value is provided for `pageToken` when a job is queued by this worker, which will result in the review checker getting the first page of reviews on its first run. Naturally, this is what we always want on our first run.
