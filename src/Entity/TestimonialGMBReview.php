@@ -44,7 +44,7 @@ class TestimonialGMBReview extends ConfigEntityBase
   /**
    * The rating of this review.
    * 
-   * @var integer
+   * @var float
    */
   protected $starRating;
 
