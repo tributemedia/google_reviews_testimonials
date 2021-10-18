@@ -2,5 +2,7 @@ name: 'Google Reviews Testimonials'
 type: module
 description: 'Creates TM Testimonials out of Google My Business reviews.'
 package: Web services
-version: '9.x-1.0-dev'
+version: '9.x-1.0-alpha'
 core_version_requirement: '9.x'
+dependencies:
+  - testimonial
