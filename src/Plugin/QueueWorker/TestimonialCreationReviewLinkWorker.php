@@ -24,13 +24,47 @@ class TestimonialCreationReviewLinkWorker extends QueueWorkerBase{
   public function processItem($item) {
 
     $config = \Drupal::config('google_reviews_testimonials.settings');
+    $summary = "";
+
+    // Compute a proper summary that fits under 150 characters, since the
+    // testimonial summary field has a 150 char limit.
+    if(strlen($item->comment) < 150) {
+
+      $summary = $item->comment;
+
+    }
+    else {
+      $sumArr = explode(" ", $item->comment);
+
+        foreach($sumArr as $str)
+        {
+
+            if((strlen($summary) + (strlen($str) + 1)) < 150)
+            {
+                $summary .= $str;
+                $summary .= ' ';
+            }
+            else
+            {
+                break;
+            }
+
+        }
+        
+    }
+    ksm($summary);
     $testimonial = Node::create([
       'type' => 'testimonial',
       'title' => $item->displayName,
-      'body' => $item->comment,
+      'body' => [
+        'summary' => $summary,
+        'value' => $item->comment,
+      ],
     ]);
     $testimonial->save();
 
+    // Now that the testimonial is created, create the linking entity and
+    // unpublish if necessary
     $testGMBReview = TestimonialGMBReview::create([
       'id' => TestimonialGMBReview::generateID(
         $item->reviewID, 
