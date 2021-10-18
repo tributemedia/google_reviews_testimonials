@@ -10,3 +10,9 @@ google_reviews_testimonials.admin.structure.gmb_location_settings:
   route_name:  google_reviews_testimonials.gmb_location_settings
   parent: system.admin_config_services
   weight: 201
+google_reviews_testimonials.admin.structure.status:
+  title: 'Google Reviews Testimonials Status'
+  description: 'Review status of queues and statistics.'
+  route_name:  google_reviews_testimonials.status_page
+  parent: system.admin_config_services
+  weight: 202
