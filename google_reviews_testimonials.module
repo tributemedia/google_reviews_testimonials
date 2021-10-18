@@ -1,5 +1,8 @@
 <?php
 
+use Drupal\google_reviews_testimonials\Entity\TestimonialGMBReview;
+use Drupal\node\Entity\Node;
+
 /**
  * Implements hook_cron()
  */
@@ -40,4 +43,34 @@ function google_reviews_testimonials_cron() {
 
   \Drupal::logger('google_reviews_testimonials')
         ->notice('Cron job finished.');
+}
+
+/**
+ * Implements hook_entity_delete($entity)
+ *
+ * WARNING: Facing deprecation due to:
+ * https://www.drupal.org/project/drupal/issues/2551893
+ */
+function google_reviews_testimonials_entity_delete($entity) {
+
+  if($entity instanceof Node && $entity->getType() == 'testimonial') {
+
+    $tid = $entity->id();
+    $query = \Drupal::entityQuery('testimonial_gmb_review')
+        ->condition('tid', $tid);
+    $linkedEntityIDs = $query->execute();
+    
+    foreach($linkedEntityIDs as $linkedEntityID) {
+
+      $linkedEntity = TestimonialGMBReview::load($linkedEntityID);
+      $linkedEntity->delete();
+      \Drupal::messenger()
+        ->addMessage('Linked TestimonialGMBReview deleted.');
+
+    }
+
+  }
+
+  
+
 }
