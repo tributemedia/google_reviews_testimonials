@@ -4,6 +4,8 @@ namespace Drupal\google_reviews_testimonials\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\google_reviews_testimonials\Entity\TestimonialGMBReview;
+use Drupal\node\Entity\Node;
 
 class GMBLocationConfigForm extends FormBase {
 
@@ -89,8 +91,45 @@ class GMBLocationConfigForm extends FormBase {
 
     if($starMin != $settings['star_min']) {
 
+      // Update config
       $config->set('starMin', $settings['star_min'])->save();
       $starMin = $settings['star_min'];
+      $updatedTestimonials = 0;
+
+      // Unpublish testimonials that no longer meet the threshold
+      $testimonialGMBReviews = TestimonialGMBReview::loadMultiple();
+
+      foreach($testimonialGMBReviews as $review) {
+
+        $testimonial = Node::load($review->getTID());
+
+        if(!empty($testimonial)) {
+
+          if($review->getStarRating() < $starMin && 
+            $testimonial->isPublished()) {
+            
+            $testimonial->setUnpublished();
+            $testimonial->save();
+            $updatedTestimonials++;
+
+          }
+          else if($review->getStarRating() >= $starMin && 
+            !$testimonial->isPublished()) {
+
+            $testimonial->setPublished();
+            $testimonial->save();
+            $updatedTestimonials++;
+
+          }
+          
+        }
+
+      }
+
+      \Drupal::messenger()->addMessage('Updated ' 
+        . $updatedTestimonials 
+        . ' due to change in minimum star rating.');
+
     }
 
     // Authenticate and query for the location
