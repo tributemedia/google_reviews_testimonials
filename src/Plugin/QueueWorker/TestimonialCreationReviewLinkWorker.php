@@ -61,6 +61,13 @@ class TestimonialCreationReviewLinkWorker extends QueueWorkerBase{
         'value' => $item->comment,
       ],
     ]);
+
+    if($item->starRating < $config->get('starMin')) {
+
+      $testimonial->setUnpublished();
+      
+    }
+
     $testimonial->save();
 
     // Now that the testimonial is created, create the linking entity and
@@ -75,11 +82,6 @@ class TestimonialCreationReviewLinkWorker extends QueueWorkerBase{
     ]);
     $testGMBReview->save();
 
-    if($testGMBReview->getStarRating() < $config->get('starMin')) {
-
-      $testimonial->setUnpublished();
-      
-    }
   }
 
 }
