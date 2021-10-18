@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * Implements hook_cron()
+ */
+function google_reviews_testimonials_cron() {
+
+  // Every 12 hours
+  $interval = 12 * 60 * 60;
+
+  $nextRun = \Drupal::state()->get('google_reviews_testimonials.next_exec');
+
+  if(empty($nextRun)) {
+
+    \Drupal::state()->set('google_reviews_testimonials.next_exec', 
+      time() + $interval);
+
+  }
+  else {
+
+    // This block queues a job for the review checking worker at the 
+    // interval defined above.
+    if(time() >= $nextRun) {
+
+      $queueFactory = \Drupal::service('queue');
+      $rcQueue = $queueFactory->get('google_reviews_testimonials_rcq');
+      $rcQueue->createItem(new \stdClass());
+      \Drupal::logger('google_reviews_testimonials')
+        ->notice('Review check queued.');
+
+      \Drupal::state()->set('google_reviews_testimonials.next_exec', 
+        time() + $interval);
+
+    }
+
+  }
+}
