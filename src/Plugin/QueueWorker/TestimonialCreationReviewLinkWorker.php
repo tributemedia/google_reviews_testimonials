@@ -52,7 +52,7 @@ class TestimonialCreationReviewLinkWorker extends QueueWorkerBase {
         }
         
     }
-    ksm($summary);
+    
     $testimonial = Node::create([
       'type' => 'testimonial',
       'title' => $item->displayName,
