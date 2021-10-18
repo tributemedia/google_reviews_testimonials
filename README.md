@@ -50,6 +50,11 @@ This Drupal 9 module provides the ability for the system to download reviews fro
 
   
 
+**This is a Drupal 9 module, and contains code that may not exist in Drupal 8.** Use in Drupal 9 only! 
+
+
+
+
 The first step is to take care of composer requirements. Only one composer package is required to install for this module: "drupal/google_api_client": "^4.0". Similarly, there is only one Drupal module dependency, which is the [Tribute Media Testimonial module](https://github.com/tributemedia/testimonials). After the composer and Drupal dependencies are met, download the latest release from the releases tab. **DO NOT DOWNLOAD SOURCE CODE**. Releases are meant for client consumption, source is meant for development.
 
   
