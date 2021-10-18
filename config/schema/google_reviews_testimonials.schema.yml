@@ -23,7 +23,7 @@ google_reviews_testimonials.settings:
       type: string
       label: 'Location Name'
     starMin:
-      type: float
+      type: integer
       label: 'Star Minimum'
       
 google_reviews_testimonials.gmb_review_entity.*:
@@ -40,5 +40,5 @@ google_reviews_testimonials.gmb_review_entity.*:
       type: string
       label: 'Google My Business API Review ID'
     starRating:
-      type: float
+      type: integer
       label: 'Star Minimum'

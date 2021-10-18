@@ -37,7 +37,7 @@ interface TestimonialGMBReviewInterface extends ConfigEntityInterface {
   /**
    * Sets the star rating for the review.
    * 
-   * @param float $starRating
+   * @param integer $starRating
    *  The star rating of this review.
    */
   public function setStarRating($starRating);
