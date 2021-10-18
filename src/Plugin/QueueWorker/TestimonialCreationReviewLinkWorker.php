@@ -16,7 +16,7 @@ use Drupal\node\Entity\Node;
  *  cron = {"time" = 30}
  * )
  */
-class TestimonialCreationReviewLinkWorker extends QueueWorkerBase{
+class TestimonialCreationReviewLinkWorker extends QueueWorkerBase {
 
   /**
    * {@inheritdoc}
