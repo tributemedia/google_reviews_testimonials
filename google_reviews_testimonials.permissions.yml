@@ -1,0 +1,7 @@
+grt modify config:
+  title: 'Google Review Testimonials Modify Config'
+  description: 'Modify module settings and config for GRT.'
+grt view status:
+  title: 'Google Review Testimonials View Status'
+  description: 'View the status page for GRT.'
+  
