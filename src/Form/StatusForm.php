@@ -1,0 +1,133 @@
+<?php
+
+namespace Drupal\google_reviews_testimonials\Form;
+
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+
+class StatusForm extends FormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId() {
+    
+    return 'google_reviews_testimonials_status_form';
+    
+  }
+
+  public function buildForm(array $form, 
+    FormStateInterface $formState = NULL) {
+
+    $queueFactory = \Drupal::service('queue');
+    $config = \Drupal::config('google_reviews_testimonials.settings');
+    $nextRunTime = 
+      \Drupal::state()->get('google_reviews_testimonials.next_exec');
+    $rcq = $queueFactory->get('google_reviews_testimonials_rcq');
+    $rlq = $queueFactory->get('google_reviews_testimonials_rlq');
+    $testimonialCount = \Drupal::entityQuery('testimonial_gmb_review')
+      ->count()
+      ->execute();
+  
+    if(empty($nextRunTime)) {
+  
+      $nextRunTime = 0;
+  
+    }
+    
+    $rcqText = 'Items in Review Check Queue (RCQ): ' . 
+      $rcq->numberOfItems();
+    $rlqText = 'Items in Review Link Queue (RLQ): ' . 
+      $rlq->numberOfItems();
+    $countText = 'Testimonials created: ' . $testimonialCount;
+    $nextRunTimeText = 'Next run time: ';
+
+    if(empty($nextRunTime)) {
+
+      $nextRunTimeText .= '0';
+
+    }
+    else {
+
+      $nextRunTimeText .= date("D M j G:i:s T Y", $nextRunTime);
+
+    }
+
+    $form = [];
+
+    $form['stats'] = array(
+      '#type' => 'container',
+      '#attributes' => array(
+        'class' => 'stats-container',
+      ),
+      '#tree' => TRUE,
+    );
+
+    $form['stats']['review_check_queue'] = [
+      '#type' => 'label',
+      '#title' => $rcqText,
+    ];
+
+    $form['stats']['review_link_queue'] = [
+      '#type' => 'label',
+      '#title' => $rlqText,
+    ];
+
+    $form['stats']['count'] = [
+      '#type' => 'label',
+      '#title' => $countText,
+    ];
+
+    $form['stats']['next_run'] = [
+      '#type' => 'label',
+      '#title' => $nextRunTimeText,
+    ];
+
+    $form['start_flow'] = [
+      '#type' => 'submit',
+      '#value' => 'Check For Reviews'
+    ];
+
+    $form['clear_queues'] = [
+      '#type' => 'submit',
+      '#value' => 'Clear Queues'
+    ];
+
+    return $form;
+  }
+
+  public function submitForm(array &$form, FormStateInterface $formState) {
+    
+    $queueFactory = \Drupal::service('queue');
+    $rcq = $queueFactory->get('google_reviews_testimonials_rcq');
+    $rlq = $queueFactory->get('google_reviews_testimonials_rlq');
+    
+    switch($formState->getValues()['op']) {
+
+      case 'Clear Queues':
+        $rcq->deleteQueue();
+        $rlq->deleteQueue();
+        \Drupal::messenger()->addMessage('Queues cleared.');
+        break;
+      case 'Check For Reviews':
+        if($rcq->numberOfItems() > 0) {
+          \Drupal::messenger()->addError('RCQ already has a job queued.');
+        }
+        else {
+          $rcq->createItem(new \stdClass());
+
+          // TODO:
+          // This state logic is also in the hook_cron. Encapsulate this
+          // code somewhere.
+          \Drupal::state()->set('google_reviews_testimonials.next_exec', 
+            time() + (12 * 60 * 60));
+          \Drupal::messenger()->addMessage('Workflow started. ' .
+            'Run cron to start checking for new reviews.');
+        }
+        break;
+
+    }
+
+  }
+
+}

@@ -1,0 +1,21 @@
+google_reviews_testimonials.gmb_service_connection_settings:
+  path: 'admin/config/services/gmb_service_connection_settings'
+  defaults:
+    _form: '\Drupal\google_reviews_testimonials\Form\GMBServiceConnectionInfoForm'
+    _title: 'GMB Service Connection Settings'
+  requirements:
+    _permission: 'grt modify config'
+google_reviews_testimonials.gmb_location_settings:
+  path: 'admin/config/services/gmb_location_settings'
+  defaults:
+    _form: '\Drupal\google_reviews_testimonials\Form\GMBLocationConfigForm'
+    _title: 'GMB Location Settings'
+  requirements:
+    _permission: 'grt modify config'
+google_reviews_testimonials.status_page:
+  path: '/admin/config/services/google_reviews_testimonials/status'
+  defaults:
+    _form: '\Drupal\google_reviews_testimonials\Form\StatusForm'
+    _title: 'Google Review Testimonials Status'
+  requirements:
+    _permission: 'grt view status'

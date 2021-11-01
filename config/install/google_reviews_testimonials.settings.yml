@@ -1,0 +1,7 @@
+accountID: ''
+scopes: ['https://www.googleapis.com/auth/business.manage']
+serviceKey: ''
+subject: ''
+locationID: ''
+locationName: ''
+starMin: 3
