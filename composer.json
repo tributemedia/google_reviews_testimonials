@@ -1,0 +1,12 @@
+{
+    "name": "tributemedia/google_reviews_testimonials",
+    "description": "Extends the testimonials module to include Google My Business reviews.",
+    "type": "drupal-module",
+    "license": "GPL-3.0-or-later",
+    "autoload": {
+        "psr-4": {
+            "Tributemedia\\GoogleReviewsTestimonials\\": "src/"
+        }
+    },
+    "require": {}
+}
