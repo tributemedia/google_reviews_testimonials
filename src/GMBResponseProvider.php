@@ -100,7 +100,7 @@ class GMBResponseProvider {
   /**
    * Returns accounts associated with configured GMB credentials.
    * 
-   * @return array
+   * @return object
    */
   public function getAccounts() {
 
@@ -129,6 +129,7 @@ class GMBResponseProvider {
    * 
    * @param string $pageToken
    *  The query parameter pageToken required to paginate through results
+   * @return object
    */
   public function getReviews($pageToken = "") {
 
