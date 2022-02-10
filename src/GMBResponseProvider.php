@@ -63,8 +63,30 @@ class GMBResponseProvider {
         ->error('One or more of the following is empty: service key, scope, subject.');
 
     }
-    
+
     return FALSE;
+
+  }
+
+  public function getAccounts() {
+
+    $accounts = [];
+
+    $mbam = new MyBusinessAccountManagement($this->googleClient);
+
+    try {
+
+      $accounts = $mbam->accounts->listAccounts()->accounts;
+
+    }
+    catch(\Google\Service\Exception $e) {
+
+      \Drupal::logger('google_reviews_testimonials')
+          ->error('Tried getting accounts with invalid credentials.');
+
+    }
+
+    return $accounts;
 
   }
 
