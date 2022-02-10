@@ -90,4 +90,42 @@ class GMBResponseProvider {
 
   }
 
+  /**
+   * Returns reviews for the configured business from GMB.
+   * 
+   * @param string $pageToken
+   *  The query parameter pageToken required to paginate through results
+   */
+  public function getReviews($pageToken = "") {
+
+    $rootURL = 'https://mybusiness.googleapis.com/v4';
+    $accountID = $this->config->get('accountID');
+    $locationID = $this->config->get('locationID');
+    $url = $rootURL 
+      . '/accounts/' . $accountID
+      . '/locations/' . $locationID
+      . '/reviews'
+      . '?pageSize=' . $this->pageSize;
+
+    if(!empty($pageToken)) {
+
+      $url .= '&pageToken=' . $pageToken;
+
+    }
+
+    $responseJSON = json_decode(strval(
+      $this->googleClient->authorize()->get($url)->getBody()));
+    $reviews = $responseJSON->reviews;
+    $returnObj = new \stdClass();
+    $returnObj->reviews = $reviews;
+    
+    if(isset($responseJSON->nextPageToken)) {
+
+      $returnObj->pageToken = $responseJSON->nextPageToken;
+
+    }
+
+    return $returnObj;
+  }
+
 }
