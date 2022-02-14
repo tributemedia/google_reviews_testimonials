@@ -105,7 +105,7 @@ class GMBResponseProvider {
    */
   public function getAccounts() {
 
-    $accounts = [];
+    $accounts = NULL;
 
     $mbam = new MyBusinessAccountManagement($this->googleClient);
 
