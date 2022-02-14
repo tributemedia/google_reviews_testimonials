@@ -3,6 +3,7 @@
 namespace Drupal\google_reviews_testimonials;
 
 use Google\Service\MyBusinessAccountManagement;
+use Google\Service\MyBusinessBusinessInformation;
 
 /**
  * Responsible for dealing with the GMB API, and returning responses.
@@ -124,6 +125,40 @@ class GMBResponseProvider {
 
   }
 
+  public function getLocations($pageToken = '') {
+
+    $mbbm = new MyBusinessBusinessInformation($this->googleClient);
+    // READ MASK Needed to specify fields returned. See following for more info:
+    // https://stackoverflow.com/questions/69646296/google-api-get-locations-with-google-service-mybusinessbusinessinformation
+    $queryParams = [
+      'readMask' => 'name,labels,title',
+    ];
+    $accountName = 'accounts/' . $this->config->get('accountID');
+    $locsResponse = NULL;
+
+    if(!empty($pageToken)) {
+
+      $queryParams['pageToken'] = $pageToken;
+
+    }
+
+    try {
+
+      $locsResponse = $mbbm->accounts_locations
+        ->listAccountsLocations($accountName, $queryParams);
+
+    }
+    catch(\Google\Service\Exception $e) {
+
+      \Drupal::logger('google_reviews_testimonials')
+          ->error('Tried getting locations with invalid credentials.');
+
+    }
+
+    return $locsResponse;
+
+  }
+
   /**
    * Returns reviews for the configured business from GMB.
    * 
@@ -133,6 +168,9 @@ class GMBResponseProvider {
    */
   public function getReviews($pageToken = "") {
 
+    // Currently, Reviews API is not being deprecated on v4 of the API, and 
+    // has no replace on the new API. So, old v4 must be used, which requires
+    // this procedural code to request.
     $rootURL = 'https://mybusiness.googleapis.com/v4';
     $accountID = $this->config->get('accountID');
     $locationID = $this->config->get('locationID');
