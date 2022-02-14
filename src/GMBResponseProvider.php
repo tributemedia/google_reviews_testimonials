@@ -111,7 +111,7 @@ class GMBResponseProvider {
 
     try {
 
-      $accounts = $mbam->accounts->listAccounts()->accounts;
+      $accounts = $mbam->accounts->listAccounts();
 
     }
     catch(\Google\Service\Exception $e) {
@@ -125,6 +125,11 @@ class GMBResponseProvider {
 
   }
 
+  /**
+   * Gets the locations associated with the configured account.
+   * 
+   * @return object
+   */
   public function getLocations($pageToken = '') {
 
     $mbbm = new MyBusinessBusinessInformation($this->googleClient);
