@@ -1,0 +1,5 @@
+gmb-testimonials:
+  version: 1.x
+  css:
+    theme:
+      css/star-styles.css: {}

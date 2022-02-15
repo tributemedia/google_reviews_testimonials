@@ -74,3 +74,23 @@ function google_reviews_testimonials_entity_delete($entity) {
   
 
 }
+
+function google_reviews_testimonials_theme($existing, $type, $theme, $path) {
+  
+  return [
+    'field__field_testimonial_num_stars' => [
+      'template' => 'field--field_testimonial_num_stars',
+      'base hook' => 'field',
+    ],
+  ];
+  
+}
+
+function google_reviews_testimonials_preprocess_field__field_testimonial_num_stars(&$variables) {
+
+  $starPath = file_create_url(drupal_get_path('module', 'google_reviews_testimonials') 
+    . '/images/star.svg');
+
+  $variables['stars'] = intval($variables['items'][0]['content']['#markup']);
+  $variables['star'] = file_get_contents($starPath);
+}
