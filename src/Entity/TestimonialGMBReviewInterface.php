@@ -17,11 +17,6 @@ interface TestimonialGMBReviewInterface extends ConfigEntityInterface {
   public function getID();
 
   /**
-   * Returns the star rating of this review.
-   */
-  public function getStarRating();
-
-  /**
    * Returns the Testimonial ID of this entity.
    */
   public function getTID();
@@ -33,14 +28,6 @@ interface TestimonialGMBReviewInterface extends ConfigEntityInterface {
    *  The ID of the GMB review associated with the testimonial.
    */
   public function setGID($gid);
-
-  /**
-   * Sets the star rating for the review.
-   * 
-   * @param integer $starRating
-   *  The star rating of this review.
-   */
-  public function setStarRating($starRating);
 
   /**
    * Sets the Testimonial ID of this entity.
