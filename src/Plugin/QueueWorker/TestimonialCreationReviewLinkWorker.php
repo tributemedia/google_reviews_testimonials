@@ -60,6 +60,7 @@ class TestimonialCreationReviewLinkWorker extends QueueWorkerBase {
         'summary' => $summary,
         'value' => $item->comment,
       ],
+      'field_testimonial_num_stars' => $item->starRating,
     ]);
 
     if($item->starRating < $config->get('starMin')) {
@@ -77,7 +78,6 @@ class TestimonialCreationReviewLinkWorker extends QueueWorkerBase {
         $item->reviewID, 
         $testimonial->id()),
       'gid' => $item->reviewID,
-      'starRating' => $item->starRating,
       'tid' => $testimonial->id(),
     ]);
     $testGMBReview->save();

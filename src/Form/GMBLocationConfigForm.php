@@ -98,15 +98,16 @@ class GMBLocationConfigForm extends FormBase {
       $updatedTestimonials = 0;
 
       // Unpublish testimonials that no longer meet the threshold
-      $testimonialGMBReviews = TestimonialGMBReview::loadMultiple();
+      $nids = \Drupal::entityQuery('node')->condition('type','testimonial')->execute();
+      $testimonials = Node::loadMultiple($nids);
 
-      foreach($testimonialGMBReviews as $review) {
+      foreach($testimonials as $testimonial) {
 
-        $testimonial = Node::load($review->getTID());
+        if(!empty($testimonial->get('field_testimonial_num_stars')->getValue())) {
 
-        if(!empty($testimonial)) {
+          $testStars = $testimonial->get('field_testimonial_num_stars')->getValue()[0]['value'];
 
-          if($review->getStarRating() < $starMin && 
+          if($testStars < $starMin && 
             $testimonial->isPublished()) {
             
             $testimonial->setUnpublished();
@@ -114,7 +115,7 @@ class GMBLocationConfigForm extends FormBase {
             $updatedTestimonials++;
 
           }
-          else if($review->getStarRating() >= $starMin && 
+          else if($testStars >= $starMin && 
             !$testimonial->isPublished()) {
 
             $testimonial->setPublished();
