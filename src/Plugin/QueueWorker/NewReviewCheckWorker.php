@@ -3,7 +3,6 @@
 namespace Drupal\google_reviews_testimonials\Plugin\QueueWorker;
 
 use Drupal\Core\Queue\QueueWorkerBase;
-use Drupal\google_reviews_testimonials\GMBAPIConnection;
 use Drupal\google_reviews_testimonials\GMBResponseProvider;
 use Drupal\google_reviews_testimonials\Entity\TestimonialGMBReview;
 use Drupal\node\Entity\Node;
