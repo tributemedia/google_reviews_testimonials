@@ -19,7 +19,6 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   config_export = {
  *     "gid",
  *     "id",
- *     "starRating",
  *     "tid"
  *   }
  * )
@@ -40,13 +39,6 @@ class TestimonialGMBReview extends ConfigEntityBase
    * @var string
    */
   protected $id;
-
-  /**
-   * The rating of this review.
-   * 
-   * @var float
-   */
-  protected $starRating;
 
   /**
    * The ID of the testimonial. Also the ID of this entity.
@@ -91,15 +83,6 @@ class TestimonialGMBReview extends ConfigEntityBase
   /**
    * {@inheritdoc}
    */
-  public function getStarRating() {
-
-    return $this->starRating;
-
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getTID() {
 
     return $this->tid;
@@ -112,15 +95,6 @@ class TestimonialGMBReview extends ConfigEntityBase
   public function setGID($gid) {
 
     $this->gid = $gid;
-
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setStarRating($starRating) {
-
-    $this->starRating = $starRating;
 
   }
 

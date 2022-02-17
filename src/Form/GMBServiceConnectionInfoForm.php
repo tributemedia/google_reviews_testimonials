@@ -4,6 +4,7 @@ namespace Drupal\google_reviews_testimonials\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\google_reviews_testimonials\GMBResponseProvider;
 
 class GMBServiceConnectionInfoForm extends FormBase {
 
@@ -68,6 +69,7 @@ class GMBServiceConnectionInfoForm extends FormBase {
 
   public function submitForm(array &$form, FormStateInterface $formState) {
     
+    $resProvider = new GMBResponseProvider();
     $settings = $formState->getValues()['settings_container'];
 
     // Load stored config
@@ -92,16 +94,7 @@ class GMBServiceConnectionInfoForm extends FormBase {
       $subject = $settings['subject'];
     }
 
-    // Attempt to authenticate with provided credentials
-    $tmpSK = (array)json_decode($serviceKey);
-    $googleClient = new \Google\Client();
-    $googleClient->setAuthConfig($tmpSK);
-    $googleClient->setScopes($scopes);
-    $googleClient->setSubject($subject);
-    $httpClient = $googleClient->authorize();
-    $response = json_decode(strval($httpClient
-      ->get('https://mybusiness.googleapis.com/v4/accounts')
-      ->getBody()));
+    $response = $resProvider->getAccounts();
     
     // Look through the list of the accounts for the account in which the 
     // businesses are organized under (the one of type LOCATION_GROUP)

@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_testimonial_num_stars
+    - node.type.testimonial
+id: node.testimonial.field_testimonial_num_stars
+field_name: field_testimonial_num_stars
+entity_type: node
+bundle: testimonial
+label: 'Number of Stars'
+description: 'The number of stars the reviewer gave during their testimonial. Typically derived from Google reviews.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: 1
+  max: 5
+  prefix: ''
+  suffix: ''
+field_type: integer

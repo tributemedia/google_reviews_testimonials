@@ -39,6 +39,4 @@ google_reviews_testimonials.gmb_review_entity.*:
     gid:
       type: string
       label: 'Google My Business API Review ID'
-    starRating:
-      type: integer
-      label: 'Star Minimum'
+      

@@ -4,6 +4,7 @@ namespace Drupal\google_reviews_testimonials\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\google_reviews_testimonials\GMBResponseProvider;
 use Drupal\google_reviews_testimonials\Entity\TestimonialGMBReview;
 use Drupal\node\Entity\Node;
 
@@ -97,15 +98,16 @@ class GMBLocationConfigForm extends FormBase {
       $updatedTestimonials = 0;
 
       // Unpublish testimonials that no longer meet the threshold
-      $testimonialGMBReviews = TestimonialGMBReview::loadMultiple();
+      $nids = \Drupal::entityQuery('node')->condition('type','testimonial')->execute();
+      $testimonials = Node::loadMultiple($nids);
 
-      foreach($testimonialGMBReviews as $review) {
+      foreach($testimonials as $testimonial) {
 
-        $testimonial = Node::load($review->getTID());
+        if(!empty($testimonial->get('field_testimonial_num_stars')->getValue())) {
 
-        if(!empty($testimonial)) {
+          $testStars = $testimonial->get('field_testimonial_num_stars')->getValue()[0]['value'];
 
-          if($review->getStarRating() < $starMin && 
+          if($testStars < $starMin && 
             $testimonial->isPublished()) {
             
             $testimonial->setUnpublished();
@@ -113,7 +115,7 @@ class GMBLocationConfigForm extends FormBase {
             $updatedTestimonials++;
 
           }
-          else if($review->getStarRating() >= $starMin && 
+          else if($testStars >= $starMin && 
             !$testimonial->isPublished()) {
 
             $testimonial->setPublished();
@@ -132,40 +134,53 @@ class GMBLocationConfigForm extends FormBase {
 
     }
 
-    // Authenticate and query for the location
-    $queryURL = 'https://mybusiness.googleapis.com/v4/accounts/' 
-      . $accountID 
-      . '/locations';
-    $tmpSK = (array)json_decode($serviceKey);
-    $googleClient = new \Google\Client();
-    $googleClient->setAuthConfig($tmpSK);
-    $googleClient->setScopes($scopes);
-    $googleClient->setSubject($subject);
-    $httpClient = $googleClient->authorize();
-    $response = json_decode(strval($httpClient
-      ->get($queryURL)
-      ->getBody()));
+    $locations = [];
+    $loadingLocs = TRUE;
+    $resProvider = new GMBResponseProvider();
+    $nextPageToken = '';
+
+    while($loadingLocs) {
+
+      $response = $resProvider->getLocations($nextPageToken);
+      
+      if(isset($response->locations)) {
+
+        $locations = array_merge($locations, $response->locations);
+
+      }
+
+      // If nextPageToken isn't NULL, then we have more results to append to the 
+      // locations array and need to make another request.
+      if(isset($response->nextPageToken)) {
+
+        $nextPageToken = $response->nextPageToken;
+
+      }
+      else {
+
+        $nextPageToken = '';
+        $loadingLocs = FALSE;
+
+      }
+
+    }
     
-    if($response->locations) {
+    if(isset($locations)) {
 
       $locationSet = FALSE;
 
       // Find the location with an exact match on the locationName property.
       // Note: locationName and name are different values returned from the
       // API!
-      foreach($response->locations as $location) {
+      foreach($locations as $location) {
         
-        if($location->locationName == $locationName) {
+        if($location->title == $locationName) {
 
-          // Once again, the location ID required for use in the API is not
-          // provided in a straight-forward manner. The locationName property,
-          // which contains the location ID, has this value in the following
-          // format: 
-          // accounts/[accountID]/locations/[locationID]
-          // * Square brackets not included
+          // The location name provides a value in the following format:
+          // locations/[locationID]
           // Therefore, we need this explode to strip out all the unnecessary
           // info and get the good stuff.
-          $locationID = explode('/', $location->name)[3];
+          $locationID = explode('/', $location->name)[1];
           $config->set('locationID', $locationID)->save();
 
           \Drupal::messenger()->addMessage('Location saved.');
