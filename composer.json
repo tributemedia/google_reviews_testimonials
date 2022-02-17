@@ -8,5 +8,7 @@
             "Tributemedia\\GoogleReviewsTestimonials\\": "src/"
         }
     },
-    "require": {}
+    "require": {
+        "google/apiclient": "~2.12"
+    }
 }
