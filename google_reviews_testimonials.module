@@ -110,8 +110,6 @@ function google_reviews_testimonials_preprocess_field__field_testimonial_num_sta
  */
 function google_reviews_testimonials_update_9101() {
 
-  \Drupal::messenger()->addMessage("This ran!");
-
   // Add new field on Testimonial for stars
   $configPath = drupal_get_path('module', 'google_reviews_testimonials') 
       . '/config/install';
