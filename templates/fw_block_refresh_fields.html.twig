@@ -1,0 +1,51 @@
+{% if field_testimonial_image %}
+<div class="testimonials-wrapper-wrapper full-width clearfix with-image">
+  <div class="testimonial-img-wrapper">
+    {{ field_testimonial_image }}
+  </div> <!-- .testimonial-img-wrapper -->
+  
+  <div class="testimonial-wrapper">
+    <div class="testimonial-body">{{ body }}</div>
+    <div class="attribution-section">
+      <div class="author-wrapper">
+        <span class="customer-name">{{ title }}</span>{{ field_testimonial_title }}
+      </div> <!-- .author-wrapper -->
+      {% if field_testimonial_company_name or field_testimonial_city or field_testimonial_state %}
+      <div class="company-wrapper">
+        <span class="company-name">{{ field_testimonial_company_name }}{% if field_testimonial_company_name %}{% if field_testimonial_city or field_testimonial_state %}</span>&nbsp;|&nbsp;{% endif %}{% endif %}
+        {% if field_testimonial_city or field_testimonial_state %}
+        <span class="city-state-wrapper">
+          {{ field_testimonial_city }}{% if field_testimonial_city and field_testimonial_state %},&nbsp;{% endif %}{{ field_testimonial_state }}
+        </span>
+        {% endif %}
+      </div> <!-- .company-wrapper -->
+      {% endif %}
+    </div> <!-- .attribution-section -->
+  </div> <!-- .testimonial-wrapper.with-image -->
+</div>
+    {% endif %} 
+  
+  {% if not field_testimonial_image %}
+  <div class="testimonials-wrapper-wrapper full-width clearfix">
+  <div class="testimonial-wrapper">
+    <div class="testimonial-body">{{ body }}</div>
+    <div class="attribution-section">
+      <div class="author-wrapper">
+        <span class="customer-name">{{ title }}</span>{{ field_testimonial_title }}
+      </div> <!-- .author-wrapper -->
+      {% if field_testimonial_company_name or field_testimonial_city or field_testimonial_state %}
+      <div class="company-wrapper">
+        <span class="company-name">{{ field_testimonial_company_name }}{% if field_testimonial_company_name %}{% if field_testimonial_city or field_testimonial_state %}</span>&nbsp;|&nbsp;{% endif %}{% endif %}
+        {% if field_testimonial_city or field_testimonial_state %}
+        <span class="city-state-wrapper">
+          {{ field_testimonial_city }}{% if field_testimonial_city and field_testimonial_state %},&nbsp;{% endif %}{{ field_testimonial_state }}
+        </span>
+        {% endif %}
+      </div> <!-- .company-wrapper -->
+      {% endif %}
+    </div> <!-- .attribution-section -->
+  </div> <!-- .testimonial-wrapper --> 
+</div> <!-- .testimonials-wrapper-wrapper -->
+{% endif %}
+
+{{ field_testimonial_num_stars }}
