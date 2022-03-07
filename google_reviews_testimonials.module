@@ -81,9 +81,37 @@ function google_reviews_testimonials_entity_delete($entity) {
 function google_reviews_testimonials_theme($existing, $type, $theme, $path) {
   
   return [
+    'node__testimonial' => [
+      'template' => 'node--testimonial',
+      'base hook' => 'node'
+    ],
     'field__field_testimonial_num_stars' => [
       'template' => 'field--field_testimonial_num_stars',
       'base hook' => 'field',
+    ],
+    'views_view_field__field_testimonial_num_stars' => [
+      'template' => 'field--field_testimonial_num_stars',
+      'base hook' => 'view field',
+    ],
+    'views_view_fields__testimonials__testimonials_page' => [
+      'template' => 'testimonials_page_fields',
+      'base hook' => 'view fields',
+    ],
+    'views_view_fields__testimonials__sb_slide_block' => [
+      'template' => 'sb_slide_block_fields',
+      'base hook' => 'view fields',
+    ],
+    'views_view_fields__testimonials__sb_block_ref_block' => [
+      'template' => 'sb_block_refresh_fields',
+      'base hook' => 'view fields',
+    ],
+    'views_view_fields__testimonials__fw_slide_block' => [
+      'template' => 'fw_slide_block_fields',
+      'base hook' => 'view fields',
+    ],
+    'views_view_fields__testimonials__fw_refresh_block' => [
+      'template' => 'fw_block_refresh_fields',
+      'base hook' => 'view fields',
     ],
   ];
   
@@ -91,122 +119,31 @@ function google_reviews_testimonials_theme($existing, $type, $theme, $path) {
 
 function google_reviews_testimonials_preprocess_field__field_testimonial_num_stars(&$variables) {
 
+  $variables['stars'] = intval($variables['items'][0]['content']['#markup']);
+  setStarPath($variables);
+
+}
+
+function google_reviews_testimonials_preprocess_views_view_field__field_testimonial_num_stars(&$variables) {
+  
+  if(!empty($variables['row']->_entity->field_testimonial_num_stars->getValue())) {
+
+    $variables['stars'] = 
+      intval($variables['row']->_entity->field_testimonial_num_stars->getValue()[0]['value']);
+    setStarPath($variables);
+
+  }
+
+}
+
+/**
+ * Sets star path information to be used in field templates
+ */
+function setStarPath(&$variables) {
+
   $starPath = file_create_url(drupal_get_path('module', 'google_reviews_testimonials') 
     . '/images/star.svg');
 
-  $variables['stars'] = intval($variables['items'][0]['content']['#markup']);
   $variables['star'] = file_get_contents($starPath);
-}
-
-/*
-*****************************
-*** UPDATES *****************
-*****************************
-*/
-
-
-/**
- * Migrate stars field from TestimonialGMBReview to Testimonial
- */
-function google_reviews_testimonials_update_9101() {
-
-  // Add new field on Testimonial for stars
-  $configPath = drupal_get_path('module', 'google_reviews_testimonials') 
-      . '/config/install';
-  $configDir = new FileStorage($configPath);
-  $fieldConfig = $configDir->read('field.field.node.testimonial.field_testimonial_num_stars');
-  $fieldStorageConfig = $configDir->read('field.storage.node.field_testimonial_num_stars');
-  $fieldAdded = FALSE;
-
-  if(!FieldStorageConfig::loadByName($fieldStorageConfig['entity_type'], 
-    $fieldStorageConfig['field_name'])) {
-    
-    FieldStorageConfig::create($fieldStorageConfig)->save();
-
-  }
-  else {
-
-    \Drupal::messenger()->addMessage('num_stars field storage already added.');
-
-  }
-  
-  if(!FieldConfig::loadByName($fieldConfig['entity_type'], 
-    $fieldConfig['bundle'], $fieldConfig['field_name'])) {
-
-    FieldConfig::create($fieldConfig)->save();
-    $fieldAdded = TRUE;
-
-  }
-  else {
-
-    \Drupal::messenger()->addMessage('num_stars field already added.');
-
-  }
-
-  // Transfer value from stars field on config entity to testimonial for each review
-  if($fieldAdded) {
-
-    $starMappings = [];
-    $reviewConfigs = TestimonialGMBReview::loadMultiple();
-  
-    foreach($reviewConfigs as $reviewConfig) {
-      if(isset($reviewConfig->starRating)) {
-        $starMappings[$reviewConfig->getTID()] = $reviewConfig->starRating;
-      }
-    }
-  
-    $testimonials = Node::loadMultiple(array_keys($starMappings));
-    $connection = \Drupal::service('database');
-    
-    // Starting a transaction to rollback changes in case of failure
-    $transaction = $connection->startTransaction();
-    foreach($testimonials as $testimonial) {
-    
-      $starVal = $starMappings[$testimonial->id()];
-      $testimonial->set('field_testimonial_num_stars', $starVal);
-      $applied = FALSE;
-      $attempts = 0;
-  
-      while(!$applied && !$failed) {
-      
-        try {
-        
-          $testimonial->save();
-          $applied = TRUE;
-  
-        }
-        catch(\Exception $e) {
-        
-          if($attempts < 5) {
-          
-            $attempts++;
-  
-          }
-          else {
-          
-            $errorMessage = 'Could not save changes to testimonial (ID: ' . $testimonial->id()
-              . ').';
-            $failed = TRUE;
-            \Drupal::messenger()->addError($errorMessage);
-            \Drupal::logger('google_reviews_testimonials')->error($errorMessage);
-  
-          }
-  
-        }
-  
-      }
-  
-      if($failed) {
-      
-        $transaction->rollback();
-        break;
-  
-      }
-  
-    }
-
-  }
-
-  // Delete the stars field on the config entity
 
 }

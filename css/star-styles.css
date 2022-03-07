@@ -4,6 +4,10 @@
   display: inline-block;
 }
 
+.testimonial-stars-wrapper {
+  text-align: center;
+}
+
 .testimonial-star-polygon {
   fill: #ffdb4d;
 }
