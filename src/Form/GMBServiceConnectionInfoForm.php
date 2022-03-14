@@ -94,6 +94,7 @@ class GMBServiceConnectionInfoForm extends FormBase {
       $subject = $settings['subject'];
     }
 
+    $resProvider = new GMBResponseProvider();
     $response = $resProvider->getAccounts();
     
     // Look through the list of the accounts for the account in which the 
