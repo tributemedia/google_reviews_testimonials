@@ -69,7 +69,6 @@ class GMBServiceConnectionInfoForm extends FormBase {
 
   public function submitForm(array &$form, FormStateInterface $formState) {
     
-    $resProvider = new GMBResponseProvider();
     $settings = $formState->getValues()['settings_container'];
 
     // Load stored config
