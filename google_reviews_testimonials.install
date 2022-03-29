@@ -19,6 +19,19 @@ function google_reviews_testimonials_install() {
 */
 
 /**
+ * Add new setting to unpublish empty reviews.
+ */
+function google_reviews_testimonials_update_9301() {
+  
+  $config = \Drupal::service('config.factory')->getEditable('google_reviews_testimonials.settings');
+  
+  if (!array_key_exists('unpublishEmpty', $config->getRawData())) {
+    $config->set('unpublishEmpty', FALSE)->save();
+  }
+  
+}
+
+/**
  * Set the module weight to be higher than the Testimonial 
  * module's to override view templates.
  */
