@@ -27,6 +27,7 @@ class GMBLocationConfigForm extends FormBase {
     $locationID = $config->get('locationID');
     $locationName = $config->get('locationName');
     $starMin = $config->get('starMin');
+    $unpublishEmpty = $config->get('unpublishEmpty');
     
     // Build the form
     $form = [];
@@ -60,6 +61,12 @@ class GMBLocationConfigForm extends FormBase {
       '#min' => 1,
       '#max' => 5,
     );
+    
+    $form['settings_container']['unpublish_empty'] = array(
+      '#type' => 'checkbox',
+      '#title' => 'Unpublish Empty Reviews',
+      '#default_value' => $unpublishEmpty,
+    );
 
     $form['save'] = array(
       '#type' => 'submit',
@@ -82,6 +89,32 @@ class GMBLocationConfigForm extends FormBase {
     $serviceKey = $config->get('serviceKey');
     $subject = $config->get('subject');
     $scopes = $config->get('scopes');
+    $nids = \Drupal::entityQuery('node')->condition('type','testimonial')->execute();
+    $testimonials = Node::loadMultiple($nids);
+    
+    // Update empty reviews setting.
+    if ($unpublishEmpty != $settings['unpublish_empty']) {
+      
+      $config->set('unpublishEmpty', $settings['unpublish_empty'])->save();
+      $unpublishEmpty = $settings['unpublish_empty'];
+      
+      if ($unpublishEmpty) {
+        
+        // TODO: consolidate foreach usage
+        foreach($testimonials as $testimonial) {
+      
+          if(empty($testimonial->get('body')->getValue()[0]['value'])) {
+
+            if($testimonial->isPublished()) {
+
+              $testimonial->setUnpublished();
+              $testimonial->save();
+
+            }
+          }
+        }
+      }
+    }
 
     // Update the location name and star min, if necessary.
     if($locationName != $settings['location_name']) {
@@ -98,9 +131,7 @@ class GMBLocationConfigForm extends FormBase {
       $updatedTestimonials = 0;
 
       // Unpublish testimonials that no longer meet the threshold
-      $nids = \Drupal::entityQuery('node')->condition('type','testimonial')->execute();
-      $testimonials = Node::loadMultiple($nids);
-
+      // TODO: consolidate foreach usage
       foreach($testimonials as $testimonial) {
 
         if(!empty($testimonial->get('field_testimonial_num_stars')->getValue())) {
