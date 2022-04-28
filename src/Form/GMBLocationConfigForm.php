@@ -4,11 +4,39 @@ namespace Drupal\google_reviews_testimonials\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\google_reviews_testimonials\GMBResponseProvider;
 use Drupal\google_reviews_testimonials\Entity\TestimonialGMBReview;
 use Drupal\node\Entity\Node;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class GMBLocationConfigForm extends FormBase {
+
+  /**
+   * @var MessengerInterface
+   */
+  protected $messenger;
+  
+  /**
+   * Dependency injected constructor
+   * @param MessengerInterface $messenger
+   */
+  public function __construct(MessengerInterface $messenger) {
+
+    $this->messenger = $messenger;
+  }
+
+  /**
+   * @param ContainerInterface $container
+   * @return FormBase|GMBLocationConfigForm
+   */
+  public static function create(ContainerInterface $container) {
+
+    return new static(
+      $container->get('messenger')
+    );
+
+  }
 
   /**
    * {@inheritdoc}
@@ -166,7 +194,7 @@ class GMBLocationConfigForm extends FormBase {
 
       }
 
-      \Drupal::messenger()->addMessage('Updated ' 
+      $this->messenger->addMessage('Updated ' 
         . $updatedTestimonials 
         . ' due to change in minimum star rating.');
 
@@ -221,7 +249,7 @@ class GMBLocationConfigForm extends FormBase {
           $locationID = explode('/', $location->name)[1];
           $config->set('locationID', $locationID)->save();
 
-          \Drupal::messenger()->addMessage('Location saved.');
+          $this->messenger->addMessage('Location saved.');
           $locationSet = true;
           break;
         }
@@ -230,7 +258,7 @@ class GMBLocationConfigForm extends FormBase {
       if(!$locationSet) {
 
         $config->set('locationID', '')->save();
-        \Drupal::messenger()->addError('No location found with that name.');
+        $this->messenger->addError('No location found with that name.');
 
       }
     }
@@ -238,7 +266,7 @@ class GMBLocationConfigForm extends FormBase {
       
       $message = 'An error occured while querying the Google API. Did you '
         . 'setup your Account ID first? Visit the README for more details.';
-      \Drupal::messenger()->addError($message);
+      $this->messenger->addError($message);
 
     }
   }
