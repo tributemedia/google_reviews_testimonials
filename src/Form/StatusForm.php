@@ -5,6 +5,7 @@ namespace Drupal\google_reviews_testimonials\Form;
 use Drupal\Core\CronInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class StatusForm extends FormBase {
@@ -15,13 +16,17 @@ class StatusForm extends FormBase {
   protected $cron;
 
   /**
+   * @var MessengerInterface
+   */
+
+  /**
    * Dependency injected constructor
    * @param CronInterface $cron
    */
-  public function __construct(CronInterface $cron) {
+  public function __construct(CronInterface $cron, MessengerInterface $messenger) {
 
     $this->cron = $cron;
-
+    $this->messenger = $messenger;
   }
 
   /**
@@ -31,7 +36,8 @@ class StatusForm extends FormBase {
   public static function create(ContainerInterface $container) {
 
     return new static(
-      $container->get('cron')
+      $container->get('cron'),
+      $container->get('messenger')
     );
 
   }
@@ -141,11 +147,11 @@ class StatusForm extends FormBase {
       case 'Clear Queues':
         $rcq->deleteQueue();
         $rlq->deleteQueue();
-        \Drupal::messenger()->addMessage('Queues cleared.');
+        $this->messenger->addMessage('Queues cleared.');
         break;
       case 'Check For Reviews':
         if($rcq->numberOfItems() > 0) {
-          \Drupal::messenger()->addError('RCQ already has a job queued.');
+          $this->messenger->addError('RCQ already has a job queued.');
         }
         else {
           $rcq->createItem(new \stdClass());
@@ -155,13 +161,13 @@ class StatusForm extends FormBase {
           // code somewhere.
           \Drupal::state()->set('google_reviews_testimonials.next_exec', 
             time() + (12 * 60 * 60));
-          \Drupal::messenger()->addMessage('Workflow started. ' .
+          $this->messenger->addMessage('Workflow started. ' .
             'Run cron to start checking for new reviews.');
         }
         break;
       case 'Run Cron':
         $this->cron->run();
-        \Drupal::messenger()->addMessage('Cron ran. Check error logs if necessary.');
+        $this->messenger->addMessage('Cron ran. Check error logs if necessary.');
         break;
 
     }
