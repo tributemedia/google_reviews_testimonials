@@ -59,6 +59,13 @@ class GMBServiceConnectionInfoForm extends FormBase {
       '#required' => TRUE,
     );
 
+    $form['settings_container']['console_link'] = array(
+      '#markup' => '<div class="console-link">
+        <p>Manage your Google settings <a target="_blank" 
+        href="https://console.cloud.google.com/home">here</a>.</p>
+      </div>', 
+    );
+
     $form['save'] = array(
       '#type' => 'submit',
       '#value' => 'Save',

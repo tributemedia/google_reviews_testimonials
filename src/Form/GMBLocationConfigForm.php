@@ -68,6 +68,13 @@ class GMBLocationConfigForm extends FormBase {
       '#default_value' => $unpublishEmpty,
     );
 
+    $form['settings_container']['gmb_link'] = array(
+      '#markup' => '<div class="gmb-link">
+        <p>Manage your Google My Business settings <a target="_blank" 
+        href="https://business.google.com/organizations">here</a>.</p>
+      </div>', 
+    );    
+
     $form['save'] = array(
       '#type' => 'submit',
       '#value' => 'Save',
