@@ -18,6 +18,7 @@ class StatusForm extends FormBase {
   /**
    * @var MessengerInterface
    */
+  protected $messenger;
 
   /**
    * Dependency injected constructor
