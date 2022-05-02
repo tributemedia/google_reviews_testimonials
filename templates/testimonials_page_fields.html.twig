@@ -51,6 +51,8 @@
 
 {{ field_testimonial_num_stars }}
 
+{% if fields.view_node %}
 <div class="link-to-content">
   <a href="{{ view_node_link }}" class="emphasized">Read More</a>
 </div>
+{% endif %}
