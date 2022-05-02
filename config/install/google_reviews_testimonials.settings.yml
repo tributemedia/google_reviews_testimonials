@@ -5,3 +5,4 @@ subject: ''
 locationID: ''
 locationName: ''
 starMin: 3
+unpublishEmpty: false

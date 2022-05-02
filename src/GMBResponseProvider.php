@@ -34,19 +34,10 @@ class GMBResponseProvider {
   public function __construct() {
 
     $config = \Drupal::config('google_reviews_testimonials.settings');
-    $serviceKey = $config->get('serviceKey');
-    $subject = $config->get('subject');
-    $scopes = $config->get('scopes');
-    $googleClient = new \Google\Client();
-
-    $tmpSK = (array)json_decode($serviceKey);
-    $googleClient->setAuthConfig($tmpSK);
-    $googleClient->setScopes($scopes);
-    $googleClient->setSubject($subject);
-
+    
     $this->config = $config;
+    $this->loadCreds();
     $this->pageSize = 20;
-    $this->googleClient = $googleClient;
   }
 
   /**
@@ -204,6 +195,30 @@ class GMBResponseProvider {
     }
 
     return $returnObj;
+  }
+  
+  /**
+   * Setting (or resetting) Google credentials from configuration.
+   *
+   */
+  public function loadCreds() {
+    
+    $config = \Drupal::config('google_reviews_testimonials.settings');
+    $serviceKey = $config->get('serviceKey');
+    $subject = $config->get('subject');
+    $scopes = $config->get('scopes');
+    $googleClient = $this->googleClient;
+
+    if (!isset($googleClient)) {
+      $googleClient = new \Google\Client();
+      $this->googleClient = $googleClient;
+    }
+    
+    $tmpSK = (array)json_decode($serviceKey);
+    $googleClient->setAuthConfig($tmpSK);
+    $googleClient->setScopes($scopes);
+    $googleClient->setSubject($subject);
+    
   }
 
 }

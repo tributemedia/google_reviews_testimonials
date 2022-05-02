@@ -2,10 +2,46 @@
 
 namespace Drupal\google_reviews_testimonials\Form;
 
+use Drupal\Core\CronInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class StatusForm extends FormBase {
+
+  /**
+   * @var CronInterface
+   */
+  protected $cron;
+
+  /**
+   * @var MessengerInterface
+   */
+  protected $messenger;
+
+  /**
+   * Dependency injected constructor
+   * @param CronInterface $cron
+   */
+  public function __construct(CronInterface $cron, MessengerInterface $messenger) {
+
+    $this->cron = $cron;
+    $this->messenger = $messenger;
+  }
+
+  /**
+   * @param ContainerInterface $container
+   * @return FormBase|StatusForm
+   */
+  public static function create(ContainerInterface $container) {
+
+    return new static(
+      $container->get('cron'),
+      $container->get('messenger')
+    );
+
+  }
 
   /**
    * {@inheritdoc}
@@ -93,6 +129,11 @@ class StatusForm extends FormBase {
       '#value' => 'Clear Queues'
     ];
 
+    $form['run_cron'] = [
+      '#type' => 'submit',
+      '#value' => 'Run Cron'
+    ];
+
     return $form;
   }
 
@@ -107,11 +148,11 @@ class StatusForm extends FormBase {
       case 'Clear Queues':
         $rcq->deleteQueue();
         $rlq->deleteQueue();
-        \Drupal::messenger()->addMessage('Queues cleared.');
+        $this->messenger->addMessage('Queues cleared.');
         break;
       case 'Check For Reviews':
         if($rcq->numberOfItems() > 0) {
-          \Drupal::messenger()->addError('RCQ already has a job queued.');
+          $this->messenger->addError('RCQ already has a job queued.');
         }
         else {
           $rcq->createItem(new \stdClass());
@@ -121,9 +162,13 @@ class StatusForm extends FormBase {
           // code somewhere.
           \Drupal::state()->set('google_reviews_testimonials.next_exec', 
             time() + (12 * 60 * 60));
-          \Drupal::messenger()->addMessage('Workflow started. ' .
+          $this->messenger->addMessage('Workflow started. ' .
             'Run cron to start checking for new reviews.');
         }
+        break;
+      case 'Run Cron':
+        $this->cron->run();
+        $this->messenger->addMessage('Cron ran. Check error logs if necessary.');
         break;
 
     }

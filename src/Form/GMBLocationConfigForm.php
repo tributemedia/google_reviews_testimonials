@@ -4,11 +4,39 @@ namespace Drupal\google_reviews_testimonials\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\google_reviews_testimonials\GMBResponseProvider;
 use Drupal\google_reviews_testimonials\Entity\TestimonialGMBReview;
 use Drupal\node\Entity\Node;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class GMBLocationConfigForm extends FormBase {
+
+  /**
+   * @var MessengerInterface
+   */
+  protected $messenger;
+  
+  /**
+   * Dependency injected constructor
+   * @param MessengerInterface $messenger
+   */
+  public function __construct(MessengerInterface $messenger) {
+
+    $this->messenger = $messenger;
+  }
+
+  /**
+   * @param ContainerInterface $container
+   * @return FormBase|GMBLocationConfigForm
+   */
+  public static function create(ContainerInterface $container) {
+
+    return new static(
+      $container->get('messenger')
+    );
+
+  }
 
   /**
    * {@inheritdoc}
@@ -27,6 +55,7 @@ class GMBLocationConfigForm extends FormBase {
     $locationID = $config->get('locationID');
     $locationName = $config->get('locationName');
     $starMin = $config->get('starMin');
+    $unpublishEmpty = $config->get('unpublishEmpty');
     
     // Build the form
     $form = [];
@@ -60,6 +89,19 @@ class GMBLocationConfigForm extends FormBase {
       '#min' => 1,
       '#max' => 5,
     );
+    
+    $form['settings_container']['unpublish_empty'] = array(
+      '#type' => 'checkbox',
+      '#title' => 'Unpublish Empty Reviews',
+      '#default_value' => $unpublishEmpty,
+    );
+
+    $form['settings_container']['gmb_link'] = array(
+      '#markup' => '<div class="gmb-link">
+        <p>Manage your Google My Business settings <a target="_blank" 
+        href="https://business.google.com/organizations">here</a>.</p>
+      </div>', 
+    );    
 
     $form['save'] = array(
       '#type' => 'submit',
@@ -82,6 +124,32 @@ class GMBLocationConfigForm extends FormBase {
     $serviceKey = $config->get('serviceKey');
     $subject = $config->get('subject');
     $scopes = $config->get('scopes');
+    $nids = \Drupal::entityQuery('node')->condition('type','testimonial')->execute();
+    $testimonials = Node::loadMultiple($nids);
+    
+    // Update empty reviews setting.
+    if ($unpublishEmpty != $settings['unpublish_empty']) {
+      
+      $config->set('unpublishEmpty', $settings['unpublish_empty'])->save();
+      $unpublishEmpty = $settings['unpublish_empty'];
+      
+      if ($unpublishEmpty) {
+        
+        // TODO: consolidate foreach usage
+        foreach($testimonials as $testimonial) {
+      
+          if(empty($testimonial->get('body')->getValue()[0]['value'])) {
+
+            if($testimonial->isPublished()) {
+
+              $testimonial->setUnpublished();
+              $testimonial->save();
+
+            }
+          }
+        }
+      }
+    }
 
     // Update the location name and star min, if necessary.
     if($locationName != $settings['location_name']) {
@@ -98,9 +166,7 @@ class GMBLocationConfigForm extends FormBase {
       $updatedTestimonials = 0;
 
       // Unpublish testimonials that no longer meet the threshold
-      $nids = \Drupal::entityQuery('node')->condition('type','testimonial')->execute();
-      $testimonials = Node::loadMultiple($nids);
-
+      // TODO: consolidate foreach usage
       foreach($testimonials as $testimonial) {
 
         if(!empty($testimonial->get('field_testimonial_num_stars')->getValue())) {
@@ -128,7 +194,7 @@ class GMBLocationConfigForm extends FormBase {
 
       }
 
-      \Drupal::messenger()->addMessage('Updated ' 
+      $this->messenger->addMessage('Updated ' 
         . $updatedTestimonials 
         . ' due to change in minimum star rating.');
 
@@ -183,7 +249,7 @@ class GMBLocationConfigForm extends FormBase {
           $locationID = explode('/', $location->name)[1];
           $config->set('locationID', $locationID)->save();
 
-          \Drupal::messenger()->addMessage('Location saved.');
+          $this->messenger->addMessage('Location saved.');
           $locationSet = true;
           break;
         }
@@ -192,7 +258,7 @@ class GMBLocationConfigForm extends FormBase {
       if(!$locationSet) {
 
         $config->set('locationID', '')->save();
-        \Drupal::messenger()->addError('No location found with that name.');
+        $this->messenger->addError('No location found with that name.');
 
       }
     }
@@ -200,7 +266,7 @@ class GMBLocationConfigForm extends FormBase {
       
       $message = 'An error occured while querying the Google API. Did you '
         . 'setup your Account ID first? Visit the README for more details.';
-      \Drupal::messenger()->addError($message);
+      $this->messenger->addError($message);
 
     }
   }

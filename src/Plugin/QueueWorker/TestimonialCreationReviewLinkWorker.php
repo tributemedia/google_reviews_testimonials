@@ -63,7 +63,8 @@ class TestimonialCreationReviewLinkWorker extends QueueWorkerBase {
       'field_testimonial_num_stars' => $item->starRating,
     ]);
 
-    if($item->starRating < $config->get('starMin')) {
+    if($item->starRating < $config->get('starMin') || 
+    ($config->get('unpublishEmpty') && empty($item->comment))) {
 
       $testimonial->setUnpublished();
       
