@@ -1,7 +1,7 @@
-{% if field_testimonial_image %}
+{% if image_set %}
 <div class="testimonials-wrapper-wrapper clearfix with-image">
   <div class="testimonial-img-wrapper">
-    {{ field_testimonial_image }}
+    {{ fields.field_testimonial_image.content }}
   </div> <!-- .testimonial-img-wrapper -->
   
   <div class="testimonial-wrapper">
@@ -24,9 +24,8 @@
     </div> <!-- .attribution-section -->
   </div> <!-- .testimonial-wrapper.with-image -->
 </div>
-{% endif %} 
-  
-{% if not field_testimonial_image %}
+
+{% else %}
 <div class="testimonials-wrapper-wrapper clearfix">
   <div class="testimonial-wrapper">
     <div class="testimonial-body">{{ body }}</div>
@@ -47,7 +46,7 @@
     </div> <!-- .attribution-section -->
   </div> <!-- .testimonial-wrapper --> 
 </div> <!-- .testimonials-wrapper-wrapper -->
-{% endif %}
+{% endif %} 
 
 {{ field_testimonial_num_stars }}
 

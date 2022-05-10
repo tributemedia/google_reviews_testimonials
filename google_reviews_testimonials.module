@@ -124,6 +124,21 @@ function google_reviews_testimonials_preprocess_field__field_testimonial_num_sta
 
 }
 
+/**
+ * Only purpose is to add image_set to view templates. Part of a messy solution
+ * that is hopefully going to be replaced by the work in #56.
+ */
+function google_reviews_testimonials_preprocess_views_view_fields(&$variables) {
+
+  if(!empty($variables['fields']['field_testimonial_image']) && 
+  strpos($variables['fields']['field_testimonial_image']->content, 'img') !== FALSE) {
+
+    $variables['image_set'] = TRUE;
+
+  }
+  
+}
+
 function google_reviews_testimonials_preprocess_views_view_field__field_testimonial_num_stars(&$variables) {
   
   if(!empty($variables['row']->_entity->field_testimonial_num_stars->getValue())) {
