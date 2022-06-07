@@ -5,10 +5,37 @@ namespace Drupal\google_reviews_testimonials\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\google_reviews_testimonials\GMBResponseProvider;
+use Drupal\Core\Messenger\MessengerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class GMBServiceConnectionInfoForm extends FormBase {
 
+  /**
+   * @var MessengerInterface
+   */
+   protected $messenger;
+   
+  /**
+   * Dependency injected constructor
+   * @param MessengerInterface $messenger
+   */
+   public function __construct(MessengerInterface $messenger) {
 
+     $this->messenger = $messenger;
+   }
+
+  /**
+   * @param ContainerInterface $container
+   * @return FormBase|GMBLocationConfigForm
+   */
+   public static function create(ContainerInterface $container) {
+
+     return new static(
+       $container->get('messenger')
+     );
+
+   }
+     
   /**
    * {@inheritdoc}
    */
@@ -116,6 +143,7 @@ class GMBServiceConnectionInfoForm extends FormBase {
           // accounts/[accountID] 
           // * Square brackets not included
           $config->set('accountID', explode('/', $account->name)[1])->save();
+          $this->messenger->addMessage('Account ID saved.');
         }
       }
     }
