@@ -6,7 +6,9 @@ use Drupal\Core\CronInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\google_reviews_testimonials\Plugin\QueueWorker\NewReviewCheckWorker;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+
 
 class StatusForm extends FormBase {
 
@@ -157,11 +159,7 @@ class StatusForm extends FormBase {
         else {
           $rcq->createItem(new \stdClass());
 
-          // TODO:
-          // This state logic is also in the hook_cron. Encapsulate this
-          // code somewhere.
-          \Drupal::state()->set('google_reviews_testimonials.next_exec', 
-            time() + (12 * 60 * 60));
+          NewReviewCheckWorker::setNextExecTime();
           $this->messenger->addMessage('Workflow started. ' .
             'Run cron to start checking for new reviews.');
         }
