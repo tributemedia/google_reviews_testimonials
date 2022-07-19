@@ -18,6 +18,8 @@ use Drupal\node\Entity\Node;
  * )
  */
 class NewReviewCheckWorker extends QueueWorkerBase {
+  
+  const INTERVAL = 12 * 60 * 60;
 
   /**
    * {@inheritdoc}
@@ -117,5 +119,12 @@ class NewReviewCheckWorker extends QueueWorkerBase {
 
     }
 
+  }
+  
+  public static function setNextExecTime() {
+    
+    \Drupal::state()->set('google_reviews_testimonials.next_exec', 
+      time() + self::INTERVAL);
+      
   }
 }
