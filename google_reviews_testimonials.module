@@ -88,27 +88,7 @@ function google_reviews_testimonials_theme($existing, $type, $theme, $path) {
     'views_view_field__field_testimonial_num_stars' => [
       'template' => 'field--field_testimonial_num_stars',
       'base hook' => 'view field',
-    ],
-    'views_view_fields__testimonials__testimonials_page' => [
-      'template' => 'testimonials_page_fields',
-      'base hook' => 'view fields',
-    ],
-    'views_view_fields__testimonials__sb_slide_block' => [
-      'template' => 'sb_slide_block_fields',
-      'base hook' => 'view fields',
-    ],
-    'views_view_fields__testimonials__sb_block_ref_block' => [
-      'template' => 'sb_block_refresh_fields',
-      'base hook' => 'view fields',
-    ],
-    'views_view_fields__testimonials__fw_slide_block' => [
-      'template' => 'fw_slide_block_fields',
-      'base hook' => 'view fields',
-    ],
-    'views_view_fields__testimonials__fw_refresh_block' => [
-      'template' => 'fw_block_refresh_fields',
-      'base hook' => 'view fields',
-    ],
+    ]
   ];
   
 }
@@ -118,21 +98,6 @@ function google_reviews_testimonials_preprocess_field__field_testimonial_num_sta
   $variables['stars'] = intval($variables['items'][0]['content']['#markup']);
   setStarPath($variables);
 
-}
-
-/**
- * Only purpose is to add image_set to view templates. Part of a messy solution
- * that is hopefully going to be replaced by the work in #56.
- */
-function google_reviews_testimonials_preprocess_views_view_fields(&$variables) {
-
-  if(!empty($variables['fields']['field_testimonial_image']) && 
-  strpos($variables['fields']['field_testimonial_image']->content, 'img') !== FALSE) {
-
-    $variables['image_set'] = TRUE;
-
-  }
-  
 }
 
 function google_reviews_testimonials_preprocess_views_view_field__field_testimonial_num_stars(&$variables) {
