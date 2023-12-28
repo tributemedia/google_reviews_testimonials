@@ -117,7 +117,7 @@ function google_reviews_testimonials_preprocess_views_view_field__field_testimon
  */
 function setStarPath(&$variables) {
 
-  $starPath = file_create_url(drupal_get_path('module', 'google_reviews_testimonials') 
+  $starPath = \Drupal::service('file_url_generator')->generateAbsoluteString(\Drupal::service('extension.path.resolver')->getPath('module', 'google_reviews_testimonials') 
     . '/images/star.svg');
 
   $variables['star'] = file_get_contents($starPath);
