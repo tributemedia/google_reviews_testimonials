@@ -28,9 +28,11 @@
 #}
 {{ attach_library('google_reviews_testimonials/gmb-testimonials') }}
 <div class="testimonial-stars-wrapper">
-{% for i in 0..5 if i < stars %}
-  <div class="testimonial-star">
-    {{ star|raw }}
-  </div>
+{% for i in 0..5 %}
+  {% if i < stars %}
+    <div class="testimonial-star">
+      {{ star|raw }}
+    </div>
+  {% endif %}
 {% endfor %}
 </div>
