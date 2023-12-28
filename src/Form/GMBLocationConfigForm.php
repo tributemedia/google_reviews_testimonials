@@ -124,7 +124,7 @@ class GMBLocationConfigForm extends FormBase {
     $serviceKey = $config->get('serviceKey');
     $subject = $config->get('subject');
     $scopes = $config->get('scopes');
-    $nids = \Drupal::entityQuery('node')->condition('type','testimonial')->execute();
+    $nids = \Drupal::entityQuery('node')->accessCheck(false)->condition('type','testimonial')->execute();
     $testimonials = Node::loadMultiple($nids);
     
     // Update empty reviews setting.
